@@ -1,0 +1,25 @@
+[project]
+name = "mercury-node"
+version = "0.1.0"
+description = "Mercury node: lets a Windows, Android (Termux), Linux or macOS device take verified tasks from a Mercury hub"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = ["websockets>=13,<16"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+mercury-node = "mercury_node.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mercury_node"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

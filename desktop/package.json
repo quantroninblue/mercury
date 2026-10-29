@@ -1,0 +1,23 @@
+{
+  "name": "mercury-desktop",
+  "version": "0.1.0",
+  "description": "Mercury desktop app: chat with Mercury, see your devices, tasks and skills",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite build && electron .",
+    "app": "electron ."
+  },
+  "license": "MIT",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.3.3",
+    "electron": "44.5.1",
+    "vite": "5.4.10"
+  }
+}
