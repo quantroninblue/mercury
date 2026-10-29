@@ -1,0 +1,18 @@
+# Local environments
+.venv/
+.venv-*/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets and runtime state (these live in MERCURY_HOME, never in the repo)
+.env
+*.db
+*.db-wal
+*.db-shm
+
+# Engine build artefacts
+engine/.venv/
+engine/node_modules/
+engine/scripts/whatsapp-bridge/node_modules/
+node_modules/

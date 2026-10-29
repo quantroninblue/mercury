@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Mercury hub launcher.
+#
+#   mercury relay|pair|devices|revoke|policy|tasks|run|admin-token|status ...
+#       hub administration (mercury_hub)
+#   mercury [anything else]
+#       the agent itself: chat, gateway, model, auth, skills, whatsapp, ...
+#
+# Everything runs in the engine's pinned environment (engine/scripts/run-in-hermes-env)
+# with MERCURY_HOME (default ~/.mercury) as the agent's home.
+set -u
+
+repo="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+export MERCURY_HOME="${MERCURY_HOME:-$HOME/.mercury}"
+export HERMES_HOME="$MERCURY_HOME"
+export HERMES_RUNTIME_DIR="${HERMES_RUNTIME_DIR:-$MERCURY_HOME/tools}"
+export HERMES_PREFER_ARTIFACT_MIRROR="${HERMES_PREFER_ARTIFACT_MIRROR:-1}"
+export PYTHONPATH="$repo${PYTHONPATH:+:$PYTHONPATH}"
+run_env="$repo/engine/scripts/run-in-hermes-env"
+
+case "${1:-}" in
+    relay|pair|devices|revoke|policy|tasks|run|admin-token|status)
+        exec "$run_env" python3 -m mercury_hub "$@" ;;
+    hub-help)
+        exec "$run_env" python3 -m mercury_hub --help ;;
+    *)
+        exec "$run_env" python3 -m hermes_cli.main "$@" ;;
+esac

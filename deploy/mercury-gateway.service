@@ -1,0 +1,15 @@
+# systemd user unit for the Mercury agent gateway (WhatsApp + API server).
+# Install alongside mercury-relay.service (see that file).
+[Unit]
+Description=Mercury agent gateway (WhatsApp, API server)
+After=network-online.target mercury-relay.service
+Wants=mercury-relay.service
+
+[Service]
+ExecStart=%h/.local/bin/mercury gateway run
+Restart=on-failure
+RestartSec=5
+Environment=MERCURY_HOME=%h/.mercury
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,27 @@
+[project]
+name = "mercury-hub"
+version = "0.1.0"
+description = "Mercury hub: a cross-device, self-learning agent (device relay, policy, agent plugin) built on Hermes Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+# Everything here is already a pinned core dependency of the engine (engine/pyproject.toml),
+# so installing Mercury adds no new third-party packages.
+dependencies = ["fastapi", "uvicorn", "websockets", "httpx", "pydantic"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+mercury-hub = "mercury_hub.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mercury_hub", "mercury_hub.*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,64 @@
+# Mercury hub defaults. install.sh copies this to $MERCURY_HOME/config.yaml on first
+# install (an existing config is never overwritten) and fills in the repo and home
+# placeholders below. Any engine setting can be added here; missing keys use engine defaults.
+
+# -- Model --------------------------------------------------------------------
+# Mercury is model-agnostic. The default is a local Ollama model so a fresh hub works
+# offline. Switch any time with `mercury model` (interactive picker) or edit this block.
+#   Local server (Ollama, LM Studio, vLLM, llama.cpp): provider: custom, base_url: http://HOST:PORT/v1
+#   Hosted provider: run `mercury model`, pick one and sign in; its key is saved to .env.
+# A shared office hub should use its own API key or a local model, not a personal subscription.
+model:
+  provider: custom
+  default: qwen3:8b
+  base_url: http://localhost:11434/v1
+  # The engine needs a 64K-token window or more. For Ollama, start the server with
+  # OLLAMA_CONTEXT_LENGTH=65536. An 8B model at 64K needs roughly 16 GB of GPU or system
+  # memory; on smaller machines use a hosted provider instead.
+  context_length: 65536
+  # Ask Ollama for this window per request, so other apps keep Ollama's default.
+  ollama_num_ctx: 65536
+
+# Optional: fall back to another provider when the main one fails.
+# fallback_providers:
+#   - provider: <provider name from `mercury model`>
+#     model: <model id>
+
+# -- Mercury device tools -------------------------------------------------------
+plugins:
+  enabled: [mercury-devices]
+
+# -- Safety ---------------------------------------------------------------------
+approvals:
+  # manual: every flagged command (hub terminal or remote device) waits for a human yes.
+  mode: manual
+  timeout: 300
+  cron_mode: deny
+  single_query_mode: deny
+  unattended_mode: deny
+
+# -- Self-learning ----------------------------------------------------------------
+skills:
+  # New or edited skills are staged until a person runs /skills approve <id>.
+  write_approval: true
+  guard_agent_created: true
+  creation_nudge_interval: 10
+  # Mercury's seed skills ship read-only with the repo.
+  external_dirs:
+    - "@MERCURY_REPO@/skills"
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+
+# -- Hub terminal ---------------------------------------------------------------
+# The agent's own shell on the hub is where new skills are tested before approval.
+# Default: a dedicated folder on the hub. Production: set backend: docker (needs Docker)
+# so skill tests run in a locked-down container.
+terminal:
+  backend: local
+  cwd: "@MERCURY_HOME@/sandbox"
+  timeout: 180
+
+display:
+  skin: mercury

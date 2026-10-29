@@ -1,0 +1,13 @@
+name: mercury-devices
+version: 0.1.0
+description: "Mercury cross-device tools: list paired devices, run verified tasks on them through the Mercury relay, approval gating per device, and skill outcome tracking."
+author: "Mercury"
+provides_tools:
+  - mercury_devices
+  - mercury_run
+  - mercury_task
+  - mercury_tasks
+  - mercury_skill_stats
+provides_hooks:
+  - pre_tool_call
+  - post_tool_call

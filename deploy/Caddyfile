@@ -1,0 +1,12 @@
+# TLS front door for the Mercury relay. Caddy obtains the certificate automatically.
+# Only the device-facing routes are exposed; the admin API and the agent's API server
+# stay on localhost.
+mercury.example.com {
+	@device path /health /v1/pair /v1/node /v1/ask /v1/ask/*
+	handle @device {
+		reverse_proxy 127.0.0.1:8765
+	}
+	handle {
+		respond 404
+	}
+}

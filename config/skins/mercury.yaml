@@ -1,0 +1,19 @@
+name: mercury
+description: Mercury hub, quicksilver and steel blue
+colors:
+  banner_border: "#7A8CA3"
+  banner_title: "#C9D6E3"
+  banner_accent: "#5FA8D3"
+  banner_dim: "#6B7785"
+  banner_text: "#D8E1EA"
+  ui_accent: "#5FA8D3"
+  response_border: "#5FA8D3"
+spinner:
+  waiting_faces: ["(o)", "( )"]
+  thinking_faces: ["(o)", "(.)"]
+  thinking_verbs: ["routing", "relaying", "checking devices", "verifying"]
+branding:
+  agent_name: "Mercury"
+  welcome: "Mercury hub: one agent, all your devices. Type /devices to see what's connected."
+  response_label: " Mercury "
+  prompt_symbol: ">"

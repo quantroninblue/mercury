@@ -1,0 +1,16 @@
+# systemd user unit for the Mercury device relay.
+#   cp deploy/mercury-*.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now mercury-relay mercury-gateway
+#   loginctl enable-linger $USER     # keep running after logout
+[Unit]
+Description=Mercury device relay
+After=network-online.target
+
+[Service]
+ExecStart=%h/.local/bin/mercury relay
+Restart=on-failure
+RestartSec=5
+Environment=MERCURY_HOME=%h/.mercury
+
+[Install]
+WantedBy=default.target
