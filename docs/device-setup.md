@@ -77,7 +77,7 @@ Expect: `rejected ... this device is read-only`. Set `"mode"` back to `"normal"`
 
 **A7. The laptop's own audit log:** `py -m mercury_node log`
 
-Expect: every task from A4–A6, including the refused one.
+Expect: every task from A4 to A6, including the refused one.
 
 **A8. Mercury picks the device and verifies.** On the hub, run `mercury` (chat) and type:
 
