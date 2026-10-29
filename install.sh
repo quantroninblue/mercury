@@ -40,6 +40,9 @@ export MERCURY_HOME="$home" HERMES_HOME="$home" HERMES_RUNTIME_DIR="$home/tools"
 # Fetch pinned binaries (uv, Python) from the engine's checksum-verified mirror first; some networks
 # throttle GitHub release downloads to a crawl. Set to 0 to try GitHub first.
 export HERMES_PREFER_ARTIFACT_MIRROR="${HERMES_PREFER_ARTIFACT_MIRROR:-1}"
+# Keep the engine's Python interpreter inside MERCURY_HOME too (uv defaults to ~/.local/share/uv).
+mkdir -p "$home/tools/python"
+export UV_PYTHON_INSTALL_DIR="${UV_PYTHON_INSTALL_DIR:-$home/tools/python}"
 
 if $prepare_env; then
     say "Preparing the engine environment (first run downloads pinned Python 3.14 and packages)"

@@ -15,6 +15,7 @@ export MERCURY_HOME="${MERCURY_HOME:-$HOME/.mercury}"
 export HERMES_HOME="$MERCURY_HOME"
 export HERMES_RUNTIME_DIR="${HERMES_RUNTIME_DIR:-$MERCURY_HOME/tools}"
 export HERMES_PREFER_ARTIFACT_MIRROR="${HERMES_PREFER_ARTIFACT_MIRROR:-1}"
+[ -d "$MERCURY_HOME/tools/python" ] && export UV_PYTHON_INSTALL_DIR="${UV_PYTHON_INSTALL_DIR:-$MERCURY_HOME/tools/python}"
 export PYTHONPATH="$repo${PYTHONPATH:+:$PYTHONPATH}"
 run_env="$repo/engine/scripts/run-in-hermes-env"
 
