@@ -70,10 +70,10 @@ mercury-node startup --remove
 
 ```bash
 mercury-node ask "what are the 5 biggest files in Downloads on my laptop?"
-mercury-node ask --new "start a fresh conversation"
+mercury-node ask --new "start a fresh conversation"   # for all your devices
 ```
 
-If Mercury needs approval for something risky, you're asked right there: `y` approves once, `s` approves for the session, anything else denies. This is how a phone can send tasks to a laptop without WhatsApp.
+All your devices share one conversation with Mercury by default, so you can start something on one device and follow up from another. If Mercury needs approval for something risky, you're asked right there: `y` approves once, `s` approves for the session, anything else denies. This is how a phone can send tasks to a laptop without WhatsApp.
 
 ## Your device, your rules
 
