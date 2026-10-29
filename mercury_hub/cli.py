@@ -49,7 +49,8 @@ def cmd_relay(args, settings: Settings) -> None:
     if not settings.admin_token:
         logging.warning("MERCURY_ADMIN_TOKEN is not set; the agent and CLI cannot submit tasks.")
     app = create_app(Store(settings.db_path), settings.admin_token, settings.api_url, settings.api_key,
-                     home=settings.home, seed_skills=Path(__file__).resolve().parents[1] / "skills")
+                     home=settings.home, seed_skills=Path(__file__).resolve().parents[1] / "skills",
+                     shared_conversation=settings.shared_conversation)
     uvicorn.run(app, host=args.host or settings.relay_host, port=args.port or settings.relay_port,
                 ws_max_size=2 * 1024 * 1024, ws_ping_interval=20, ws_ping_timeout=20, log_level="info",
                 proxy_headers=True, forwarded_allow_ips=args.forwarded_allow_ips)

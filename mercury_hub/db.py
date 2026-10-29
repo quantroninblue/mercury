@@ -68,6 +68,10 @@ CREATE TABLE IF NOT EXISTS tasks (
     finished_at REAL
 );
 CREATE INDEX IF NOT EXISTS tasks_by_device ON tasks(device_id, created_at);
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS skill_outcomes (
     skill TEXT NOT NULL,
     task_id TEXT NOT NULL,
@@ -282,6 +286,16 @@ class Store:
             row["collect_paths"] = json.loads(row["collect_paths"])
             row["artifacts"] = json.loads(row["artifacts"])
         return rows
+
+    # -- settings ------------------------------------------------------------
+
+    def get_setting(self, key: str, default: str = "") -> str:
+        row = self._one("SELECT value FROM settings WHERE key = ?", (key,))
+        return row["value"] if row else default
+
+    def set_setting(self, key: str, value: str) -> None:
+        self._run("INSERT INTO settings VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                  (key, value))
 
     # -- skill outcomes --------------------------------------------------------
 

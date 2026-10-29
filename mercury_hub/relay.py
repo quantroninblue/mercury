@@ -113,9 +113,8 @@ class Hub:
         self.connections: dict[str, Connection] = {}
         self.waiters: dict[str, asyncio.Future] = {}
         self.pair_failures: dict[str, list[float]] = {}
-        # /v1/ask: which device owns each agent run, and each device's conversation.
+        # /v1/ask: which device owns each agent run.
         self.ask_runs: dict[str, str] = {}
-        self.ask_sessions: dict[str, str] = {}
 
     # -- task lifecycle --------------------------------------------------------
 
@@ -263,7 +262,10 @@ def list_skills(home: Path | None, extra_dirs: list[Path]) -> dict:
 
 
 def create_app(store: Store, admin_token: str, api_url: str = "", api_key: str = "",
-               home: Path | None = None, seed_skills: Path | None = None) -> FastAPI:
+               home: Path | None = None, seed_skills: Path | None = None,
+               shared_conversation: bool = True) -> FastAPI:
+    """``shared_conversation``: every paired device continues one conversation with Mercury (the
+    default, for a personal hub). False gives each device its own thread."""
     app = FastAPI(title="Mercury relay", version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
     hub = Hub(store, admin_token)
     app.state.hub = hub
@@ -365,12 +367,14 @@ def create_app(store: Store, admin_token: str, api_url: str = "", api_key: str =
 
     @app.post("/v1/ask")
     async def ask(body: AskRequest, device: dict = Depends(require_device)) -> dict:
-        if body.new_conversation or device["id"] not in hub.ask_sessions:
-            suffix = f"-{int(time.time())}" if body.new_conversation else ""
-            hub.ask_sessions[device["id"]] = f"mercury-device-{device['id'][:12]}{suffix}"
+        key, base = (("conversation", "mercury-main") if shared_conversation
+                     else (f"conversation:{device['id']}", f"mercury-device-{device['id'][:12]}"))
+        if body.new_conversation:
+            store.set_setting(key, f"{base}-{int(time.time())}")
+        session_id = store.get_setting(key, base)
         message = (f"[Sent from the user's device '{device['name']}' ({device['platform'] or 'unknown OS'}). "
                    f"Reply in plain text suitable for a small screen.]\n\n{body.message}")
-        run = await agent_api("POST", "/v1/runs", {"input": message, "session_id": hub.ask_sessions[device["id"]]})
+        run = await agent_api("POST", "/v1/runs", {"input": message, "session_id": session_id})
         run_id = str(run.get("run_id") or "")
         if not run_id:
             raise HTTPException(502, "agent API did not return a run id")

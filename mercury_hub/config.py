@@ -48,6 +48,7 @@ class Settings:
     public_url: str
     api_url: str = ""
     api_key: str = ""
+    shared_conversation: bool = True
 
     @classmethod
     def load(cls) -> "Settings":
@@ -67,4 +68,5 @@ class Settings:
             api_url=env.get("MERCURY_AGENT_API_URL",
                             f"http://127.0.0.1:{env.get('API_SERVER_PORT', '8642')}").rstrip("/"),
             api_key=env.get("API_SERVER_KEY", ""),
+            shared_conversation=env.get("MERCURY_CONVERSATION", "shared").strip().lower() != "per-device",
         )

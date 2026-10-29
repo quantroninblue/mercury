@@ -65,6 +65,17 @@ This prepares the engine environment, then creates `~/.mercury` (config, secrets
    - Run `mercury whatsapp` and scan the QR code with Mercury's phone.
    - WhatsApp does not officially support bots. Use a dedicated number and don't send bulk messages.
 
+4. **Skill sandbox.** Mercury tests new skills in the hub's own shell before they touch a device. By default that is a dedicated folder, `~/.mercury/sandbox`. On a shared server, isolate it in a container instead: install Docker, then set this in `~/.mercury/config.yaml`:
+
+   ```yaml
+   terminal:
+     backend: docker
+   ```
+
+   Each test then runs in a locked-down container (no extra privileges, process and memory limits). Commands sent to devices are not affected: they always go through the relay, the approval gate and the device's own policy.
+5. **Conversations.** By default all your devices continue one conversation with Mercury: a task started from the phone can be followed up from the laptop. Set `MERCURY_CONVERSATION=per-device` in `~/.mercury/.env` to give each device its own thread.
+6. **Web search** for skill research is enabled by `install.sh` (DuckDuckGo, no key). To use a paid provider instead, add its key to `~/.mercury/.env` (for example `FIRECRAWL_API_KEY`).
+
 ## Run
 
 ```bash
@@ -151,7 +162,7 @@ Next time it reuses the approved skill without researching again. `mercury_skill
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install fastapi uvicorn websockets httpx pytest
-.venv/bin/python -m pytest          # 76 tests: relay, policy, store, plugin, CLI, device ask
+.venv/bin/python -m pytest          # 77 tests: relay, policy, store, plugin, CLI, device ask
 ```
 
 Layout:

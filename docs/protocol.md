@@ -115,7 +115,7 @@ POST /v1/ask/{run_id}/approval  {"request_id": "<prompt_id>", "execution_generat
 ```
 
 - All three need `Authorization: Bearer <device_token>`. A device can only see and answer its own requests.
-- Each device keeps one ongoing conversation until it sends `new_conversation: true`.
+- All paired devices continue one shared conversation, so a follow-up can come from any device. `new_conversation: true` starts a fresh thread for everyone. With `MERCURY_CONVERSATION=per-device` on the hub, each device keeps its own thread instead.
 - Approval prompts for risky commands appear in `pending_controls`. The asking device answers with `once`, `session` or `deny`. Unanswered prompts are denied after the hub's timeout.
 - `mercury-node ask "..."` implements this on the device.
 

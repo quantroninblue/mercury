@@ -5,7 +5,8 @@
 #
 # What it does, in order:
 #   1. Prepares the engine's pinned Python 3.14 environment (engine/scripts/run-in-hermes-env;
-#      this downloads the pinned interpreter and packages from the engine's lock file).
+#      this downloads the pinned interpreter and packages from the engine's lock file) and
+#      enables keyless web search for skill research.
 #   2. Creates MERCURY_HOME (default ~/.mercury): config.yaml, .env (chmod 600), SOUL.md,
 #      the Mercury skin, the mercury-devices plugin link and the skill sandbox. Existing
 #      files are never overwritten.
@@ -43,6 +44,12 @@ export HERMES_PREFER_ARTIFACT_MIRROR="${HERMES_PREFER_ARTIFACT_MIRROR:-1}"
 if $prepare_env; then
     say "Preparing the engine environment (first run downloads pinned Python 3.14 and packages)"
     "$repo/engine/scripts/run-in-hermes-env" python3 -c 'import sys; print("engine python", sys.version.split()[0])'
+fi
+
+if $prepare_env; then
+    say "Enabling web search for skill research (DuckDuckGo backend, no key needed)"
+    "$repo/engine/scripts/run-in-hermes-env" python3 -m hermes_cli.main tools post-setup ddgs \
+        || echo "   web search setup failed; run later: mercury tools post-setup ddgs"
 fi
 
 say "Setting up $home"

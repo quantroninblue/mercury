@@ -23,6 +23,7 @@ The suite runs the real relay (uvicorn) and real WebSocket connections from a re
 | Skill outcome tracking | `test_db.py::test_skill_stats`, `test_plugin.py` | Passed (automated) |
 | Hub CLI (`pair`, `devices`, `run`, `tasks`, `policy`, `revoke`, `admin-token`) | `test_cli.py` (real relay process) | Passed (automated) |
 | Device talks to the agent (`/v1/ask`), approval answered from the device | `test_ask.py` (agent API stubbed) | Passed (automated) |
+| One conversation shared by all devices; per-device mode | `test_ask.py` | Passed (automated) |
 | Real node client with real relay: pair, online, verified task, floor block, audit log, revoke stops node | live run, both processes on Linux | Passed (manual, 2026-10-29 16:52) |
 | install.sh home setup (idempotent, secrets generated, `.env` is 600) | manual run with `--no-env` in a scratch HOME | Passed (manual, 2026-10-29) |
 | Engine running with the plugin (CLI chat, approval prompt) | engine installed; plugin loads and is enabled (`mercury plugins list`) | Plugin load verified; live run: [device-setup.md](device-setup.md) Part 0, A8, A9 |
@@ -32,11 +33,12 @@ The suite runs the real relay (uvicorn) and real WebSocket connections from a re
 
 ## Latest automated run
 
-Run on 2026-10-29 17:34 IST, Python 3.12.3, Linux.
+Run on 2026-10-29 17:46 IST, Python 3.12.3, Linux.
 
 ```
 tests/test_ask.py::test_device_asks_and_gets_reply PASSED
-tests/test_ask.py::test_conversation_continues_until_new PASSED
+tests/test_ask.py::test_devices_share_one_conversation_until_new PASSED
+tests/test_ask.py::test_per_device_conversations PASSED
 tests/test_ask.py::test_approval_round_trip_from_device PASSED
 tests/test_ask.py::test_ask_requires_device_token_and_ownership PASSED
 tests/test_ask.py::test_ask_when_agent_api_not_configured PASSED
@@ -111,5 +113,5 @@ tests/test_relay.py::test_bad_device_token_and_pairing_rate_limit PASSED
 tests/test_relay.py::test_policy_update PASSED
 tests/test_relay.py::test_newer_connection_replaces_older PASSED
 tests/test_relay.py::test_skills_listing PASSED
-============================= 76 passed in 10.11s ==============================
+============================= 77 passed in 10.97s ==============================
 ```

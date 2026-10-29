@@ -66,6 +66,10 @@ flowchart LR
 7. The agent replies on WhatsApp with the result, the task id and "verified". The user approves the skill with `/skills approve <id>`.
 8. **Next time:** `skills_list` shows the approved skill. The agent loads it with `skill_view` and runs it directly, without researching again.
 
+## One conversation, any device
+
+Messages from WhatsApp go into the WhatsApp session. Messages from paired devices (`mercury-node ask`, Mercury Desktop) all continue one shared hub conversation, labelled with the device they came from. Memory, skills and the task log are shared by everything. The agent can also search past sessions from any channel.
+
 ## Security layers
 
 1. **Who can talk to Mercury:** a gateway allowlist, plus pairing codes for unknown senders (engine).

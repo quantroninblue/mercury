@@ -91,17 +91,49 @@ def test_device_asks_and_gets_reply(setup):
     assert state["status"] == "completed" and state["output"].startswith("echo:")
     sent = stub.runs[run["run_id"]]
     assert "Sent from the user's device 'phone' (android)" in sent["input"]
-    assert sent["session_id"].startswith("mercury-device-")
+    assert sent["session_id"] == "mercury-main"
 
 
-def test_conversation_continues_until_new(setup):
+def test_devices_share_one_conversation_until_new(setup):
     relay, stub, token = setup
-    ids = [httpx.post(relay.url + "/v1/ask", json={"message": m}, headers=_h(token)).json()["run_id"]
-           for m in ("one", "two")]
-    assert stub.runs[ids[0]]["session_id"] == stub.runs[ids[1]]["session_id"]
-    third = httpx.post(relay.url + "/v1/ask", json={"message": "fresh", "new_conversation": True},
+    code = relay.admin("POST", "/v1/admin/pairing", json={"name": "laptop"}).json()["code"]
+    laptop = pair(relay.url, code)["device_token"]
+    first = httpx.post(relay.url + "/v1/ask", json={"message": "one"}, headers=_h(token)).json()["run_id"]
+    second = httpx.post(relay.url + "/v1/ask", json={"message": "two"}, headers=_h(laptop)).json()["run_id"]
+    assert stub.runs[first]["session_id"] == stub.runs[second]["session_id"] == "mercury-main"
+    fresh = httpx.post(relay.url + "/v1/ask", json={"message": "fresh", "new_conversation": True},
                        headers=_h(token)).json()["run_id"]
-    assert stub.runs[third]["session_id"] != stub.runs[ids[0]]["session_id"]
+    after = httpx.post(relay.url + "/v1/ask", json={"message": "next"}, headers=_h(laptop)).json()["run_id"]
+    assert stub.runs[fresh]["session_id"] != "mercury-main"
+    assert stub.runs[after]["session_id"] == stub.runs[fresh]["session_id"]  # the new thread is shared too
+    assert relay.store.get_setting("conversation") == stub.runs[fresh]["session_id"]  # survives restarts
+
+
+def test_per_device_conversations(tmp_path):
+    from mercury_hub.relay import create_app
+
+    stub = AgentStub()
+    port = _free_port()
+    server = uvicorn.Server(uvicorn.Config(stub.app, host="127.0.0.1", port=port, log_level="warning"))
+    threading.Thread(target=server.run, daemon=True).start()
+    time.sleep(0.5)
+    relay = Relay(tmp_path / "hub.db")
+    relay.app = create_app(relay.store, "test-admin-token", f"http://127.0.0.1:{port}", API_KEY,
+                           shared_conversation=False)
+    relay.server.config.app = relay.app
+    relay.start()
+    try:
+        tokens = []
+        for name in ("phone", "laptop"):
+            code = relay.admin("POST", "/v1/admin/pairing", json={"name": name}).json()["code"]
+            tokens.append(pair(relay.url, code)["device_token"])
+        runs = [httpx.post(relay.url + "/v1/ask", json={"message": "hi"}, headers=_h(t)).json()["run_id"]
+                for t in tokens]
+        assert stub.runs[runs[0]]["session_id"] != stub.runs[runs[1]]["session_id"]
+        assert all(stub.runs[r]["session_id"].startswith("mercury-device-") for r in runs)
+    finally:
+        relay.stop()
+        server.should_exit = True
 
 
 def test_approval_round_trip_from_device(setup):
